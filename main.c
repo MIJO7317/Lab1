@@ -39,7 +39,9 @@ int main()
 			printf("Your string: ");
 			OutString(str);
 			printf("\nNumber words:");
-			printf("%d",NumberWords(str));
+			printf("%d\n",NumberWords(str));
+			str = FindWord(str, 1);
+			OutString(str);
 			break;
 		}
 		case 2 :

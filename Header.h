@@ -2,6 +2,7 @@
 #include<stdio.h>
 #include<string.h>
 #include<conio.h>
+#include<stdbool.h>
 
 typedef struct Array
 {
@@ -21,9 +22,14 @@ void ClearStdin()
 	while (getchar()!='\n');
 }
 
-char GetCharElement(Array* arr, size_t index)
+char GetCharElement(Array* str, size_t index)
 {
-	return (index>=0 && index<arr->count) ? *((char*)arr->data + index) : 0;
+	return index<str->count ? *((char*)str->data + index) : 0;
+}
+
+Word* GetWord(Array* list, size_t index)
+{
+	return index < list->count ? (Word*)list->data + index : NULL;
 }
 
 void SetElement(Array* arr, size_t index, void* value)
@@ -56,6 +62,20 @@ Array* Create(size_t count, size_t elem_size)
 	return arr;
 }
 
+size_t CharPointerSize(char* str)
+{
+	size_t size = 0;
+	char* ptr = str;
+	while (*ptr++)
+		size++;
+	return size;
+}
+
+size_t Size(Array* arr)
+{
+	return arr->count;
+}
+
 Array* CreateEmptyString()
 {
 	int default_element = '\0';
@@ -66,8 +86,9 @@ Array* CreateEmptyString()
 
 Array* CreateString(char* str)
 {
-	Array* arr = Create(strlen(str)+1, sizeof(char));
-	for (size_t i = 0; i < strlen(str)+1; i++)
+	size_t length = CharPointerSize(str);
+	Array* arr = Create(length+1, sizeof(char));
+	for (size_t i = 0; i < length + 1; i++)
 		SetElement(arr, i, &str[i]);
 	arr->count--;
 	return arr;
@@ -81,7 +102,7 @@ Array* InputString()
 	if (!str)
 		system("cls"), printf("Out of memmory"), exit(0);
 	fgets(str, buffer_size, stdin);
-	str[strlen(str) - 1] = '\0';
+	str[CharPointerSize(str) - 1] = '\0';
 	Array* arr = CreateString(str);
 	free(str);
 	return arr;
@@ -90,7 +111,7 @@ Array* InputString()
 void OutString(Array* str)
 {
 	for (size_t i = 0; i < str->count; i++)
-		printf("%c",GetCharElement(str,i));
+		printf("%c",GetCharElement(str, i));
 }
 
 void Delete(Array* arr)
@@ -124,6 +145,37 @@ size_t NumberWords(Array* str)
 	return *(ptr - 2) != ' ' ? ++count : count;
 }
 
+//Функция нахождения слова, находящегося по номеру number_word, в строке str. Строка str не изменяется.
+Array* FindWord(Array* str, size_t number_word)
+{
+	size_t number = 0; //Номер текущего слова 
+	char* ptr = (char*)str->data; //Изменяющаяся переменная, хранящяя копию передаваемой строки
+	while (number != number_word)  //Цикл, который передвигает ptr до начала текущего слова 
+	{
+		while (*ptr == ' ') //Цикл сдвигающий ptr до первого символа, который не является разделителем (Например, если ptr="  abcd  efg  " и разделитель это " ", то после выполнения цикла ptr="abcd  efg  ")
+			ptr++;
+		while (*ptr != ' ') //Цикл сдвигающий ptr до первого символа, который является разделителем (Например, если ptr="abcd  efg  " и разделитель это " ", то после выполнения цикла ptr="  efg  ")
+			ptr++;
+		while (*ptr == ' ') //То же, что и первый цикл
+			ptr++;
+		//Все три цикла сдвигают ptr до начала следующего слова (Например, если ptr="  abcd  efg  " и разделитель это " ", то после выполнения трёх циклов ptr="efg  ")
+		number++; //Увеличиваем номер текущего слова на единицу
+	}
+	char* buff = ptr; //Сохраняе строку, начинающююся с искомого слова в buff
+	size_t size_word = 0; //Размер слова
+	while (*ptr++ != ' ') //Цикл, в котором находим размер нашего слова 
+		size_word++;
+	ptr = buff; //Возвращаем в ptr сохранённую строку
+	char* word = (char*)malloc(sizeof(char)*size_word+sizeof('\0')); //Выделяем память под искомое слово
+	if (!word) //Сообщаем об ошибке, если word=NULL
+		system("cls"), printf("Out of memmory"), exit(0);
+	buff=word; //В buff записываем адрес, где будет хранится слово
+	while (*ptr != ' ') //Цикл, в котором записываем слово
+		*buff++ = *ptr++;
+	*buff = '\0'; //В конце слова ставим '\0'
+	return CreateString(word); //Возвращаем искомое слово, как строку
+}
+
 size_t FindSpace(char* str)
 {
 	size_t position = 0;
@@ -142,15 +194,33 @@ size_t FindNoSpace(char* str)
 	return position;
 }
 
-//Array* FillWordList(Array* str)
-//{
-//	size_t number_words = NumberWords(str);
-//	char* ptr = (char*)str->data;
-//	ptr+=FindNoSpace(ptr);
-//	for(size_t i=0; i<FindSpace(ptr); i++)
-//		
-//	return str;
-//}
+bool EqualStrings(Array* str1, Array* str2)
+{
+	if (Size(str1) != Size(str2))
+		return false;
+	for (size_t i = 0; i < Size(str1); i++)
+		if (GetCharElement(str1,i) != GetCharElement(str2,i))
+			return false;
+	return true;
+}
+
+bool WordInList(Array* list, Array* word)
+{
+	for (size_t i = 0; i < Size(list); i++)
+		if (EqualStrings(GetWord(list, i)->word_str, word))
+			return true;
+	return false;
+}
+
+Array* FillWordList(Array* str)
+{
+	size_t number_words = NumberWords(str);
+	char* ptr = (char*)str->data;
+	ptr+=FindNoSpace(ptr);
+	for(size_t i=0; i<FindSpace(ptr); i++)
+		
+	return str;
+}
 
 /*Array* StringCut(Array* str)
 {
