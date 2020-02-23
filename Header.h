@@ -4,6 +4,7 @@
 #include<conio.h>
 #include<stdbool.h>
 #include<ctype.h>
+//#include<vld.h>
 
 #define DEFAULT_BUFFER_SIZE 8
 
@@ -26,6 +27,32 @@ void ClearStdin()
 	while (getchar()!='\n');
 }
 
+void Delete(void* ptr)
+{
+	free(ptr);
+}
+
+void DeleteArray(Array* arr)
+{
+	Delete(arr->data);
+	Delete(arr);
+}
+
+Word* GetWord(Array* list, size_t index)
+{
+	return index < list->count ? (Word*)list->data + index : NULL;
+}
+
+void DeleteList(Array* list)
+{
+	for (size_t i = 0; i < list->count; i++)
+	{
+		DeleteArray(GetWord(list, i)->word_str);
+		DeleteArray(GetWord(list, i)->positions);
+	}
+	DeleteArray(list);
+}
+
 char GetCharElement(Array* str, size_t index)
 {
 	return index<str->count ? *((char*)str->data + index) : 0;
@@ -34,11 +61,6 @@ char GetCharElement(Array* str, size_t index)
 int GetIntElement(Array* arr, size_t index)
 {
 	return index < arr->count ? *((int*)arr->data + index) : 0;
-}
-
-Word* GetWord(Array* list, size_t index)
-{
-	return index < list->count ? (Word*)list->data + index : NULL;
 }
 
 void SetElement(Array* arr, size_t index, void* value)
@@ -151,9 +173,15 @@ void OutIntArray(Array* arr)
 	printf("\n");
 }
 
-void Delete(Array* arr)
+void OutWordList(Array* list)
 {
-	free(arr);
+	for (size_t i = 0; i < list->count; i++)
+	{
+		printf("Word %d: ", i);
+		OutString(GetWord(list,i)->word_str);
+		printf("\t\t\t\t\tPositions: ");
+		OutIntArray(GetWord(list,i)->positions);
+	}
 }
 
 Array* CreateInt(size_t count)
@@ -169,7 +197,11 @@ Array* CreateWordList(size_t count)
 		system("cls"), printf("Out of memmory"), exit(0);
 	word->word_str = CreateEmptyString();
 	word->positions = CreateInt(0);
-	return CreateDefault(count, sizeof(Word), word);
+	Array* list = CreateDefault(count, sizeof(Word), word);
+	DeleteArray(word->word_str);
+	DeleteArray(word->positions);
+	Delete(word);
+	return list;
 }
 
 size_t NumberWords(Array* str)
@@ -242,7 +274,9 @@ Array* FindWord(Array* str, size_t number_word)
 	while (*ptr != ' ') //Цикл, в котором записываем слово
 		*buff++ = *ptr++;
 	*buff = '\0'; //В конце слова ставим '\0'
-	return CreateString(word); //Возвращаем искомое слово, как строку
+	Array* word_str = CreateString(word); //Возвращаем искомое слово, как строку
+	Delete(word);
+	return word_str;
 }
 
 //Функция проверки равенства двух строк без учета регистра
@@ -274,11 +308,17 @@ size_t NumberDifferentWords(Array* str)
 	for (size_t i = 0; i < number_words; i++)
 	{
 		for (size_t j = i + 1; j < number_words; j++)
-			if (EqualStrings(FindWord(str, i), FindWord(str, j)))
+		{
+			Array* word1 = FindWord(str, i);
+			Array* word2 = FindWord(str, j);
+			if (EqualStrings(word1, word2))
 			{
 				count_repeat++;
 				break;
 			}
+			DeleteArray(word1);
+			DeleteArray(word2);
+		}
 	}
 	return number_words - count_repeat;
 }
@@ -286,15 +326,18 @@ size_t NumberDifferentWords(Array* str)
 Array* FillWordList(Array* str)
 {
 	Array* list = CreateWordList(NumberDifferentWords(str));
+	list->count = 0;
+	if (!list)
+		system("cls"), printf("Out of memmory"), exit(0);
 	size_t number_words = NumberWords(str);
 	size_t position_in_list;
 	for (size_t i = 0; i < number_words; i++)
 	{
-		Array* this_word = FindWord(str,i);
+		Array* this_word = FindWord(str, i);
 		if (WordInList(list, this_word, &position_in_list))
 		{
 			PushBack(GetWord(list, position_in_list)->positions, &i);
-			Delete(this_word);
+			DeleteArray(this_word);
 		}
 		else
 		{
@@ -304,6 +347,8 @@ Array* FillWordList(Array* str)
 			word->word_str = this_word;
 			word->positions = CreateInt(1);
 			SetElement(word->positions, 0, &i);
+			SetElement(list, list->count, word);
+			list->count++;
 		}
 	}
 	return list;

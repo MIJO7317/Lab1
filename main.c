@@ -41,6 +41,7 @@ int main()
 			case 1:
 			{
 				printf("Input string with words:\n");
+				DeleteArray(str);
 				str = InputString();
 				printf("Your string: ");
 				OutString(str);
@@ -50,6 +51,10 @@ int main()
 			}
 			case 2:
 			{
+				Array* list = FillWordList(str);
+				OutWordList(list);
+				DeleteList(list);
+				system("pause");
 				break;
 			}
 			case 3:
@@ -60,5 +65,5 @@ int main()
 				break;
 		}
 	} while (item != COUNT_ITEMS);
-	Delete(str);
+	DeleteArray(str);
 }
