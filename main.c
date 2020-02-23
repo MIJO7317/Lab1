@@ -2,55 +2,63 @@
 #include<stdlib.h>
 #include"Header.h"
 
+#define COUNT_ITEMS 4 //Количество пунктов меню
+
 void Menu()
 {
 	system("cls");
 	printf("1) Input string\n");
 	printf("2) Show positions of words\n");
 	printf("3) Test\n");
+	printf("4) Exit\n");
 }
 
 int SelectedMenuItem()
 {
 	int number_item; //Пункт меню, который выбирает пользователь
 	int result; //Результат работы функции scanf_s()
-	int count_items=3; //Количество пунктов меню
 	do
 	{
 		Menu();
 		printf("Please, input number item: ");
 		result = scanf_s("%d", &number_item);
 		!result ? scanf_s("%*s") : 0;
-	} while (!result || number_item>count_items || number_item<=0);
+	} while (!result || number_item>COUNT_ITEMS || number_item<=0);
 	ClearStdin();
 	return number_item;
 }
 
 int main()
 {
-	int item = SelectedMenuItem();//Выбранный пункт меню
-	system("cls");
-	switch (item)
+	Array* str = CreateEmptyString();
+	int item; //Выбранный пункт меню
+	do
 	{
-		case 1 :
+		item = SelectedMenuItem();
+		system("cls");
+		switch (item)
 		{
-			printf("Input string with words(Max quantity of cymbols - 1000):\n");
-			Array* str = InputString();
-			printf("Your string: ");
-			OutString(str);
-			printf("\nNumber words:");
-			printf("%d\n",NumberWords(str));
-			str = FindWord(str, 1);
-			OutString(str);
-			break;
+			case 1:
+			{
+				printf("Input string with words:\n");
+				str = InputString();
+				printf("Your string: ");
+				OutString(str);
+				printf("\n");
+				system("pause");
+				break;
+			}
+			case 2:
+			{
+				break;
+			}
+			case 3:
+			{
+				break;
+			}
+			default:
+				break;
 		}
-		case 2 :
-		{
-			break;
-		}
-		case 3 :
-		{
-			break;
-		}
-	}
+	} while (item != COUNT_ITEMS);
+	Delete(str);
 }
