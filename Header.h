@@ -204,14 +204,22 @@ Array* CreateWordList(size_t count)
 	return list;
 }
 
-size_t NumberWords(Array* str)
+bool CharInString(Array* str, char simbol)
+{
+	for (size_t i = 0; i < Size(str); i++)
+		if (GetCharElement(str, i) == simbol)
+			return true;
+	return false;
+}
+
+size_t NumberWords(Array* str, Array* separators)
 {
 	size_t count = 0;
 	char* ptr = (char*)str->data;
 	while (*ptr++)
-		if (*(ptr - 1) != ' ' && *ptr == ' ')
+		if (!CharInString(separators, *(ptr - 1)) && CharInString(separators, *ptr))
 			count++;
-	return *(ptr - 2) != ' ' ? ++count : count;
+	return !CharInString(separators, *(ptr - 2)) ? ++count : count;
 }
 
 //Добавляет элемент в конец массива (не работает со строками, для них используйте процедуру PushBackChar)
@@ -247,31 +255,31 @@ void PushBackChar(Array* str, char simbol)
 }
 
 //Функция нахождения слова, находящегося по номеру number_word (начиная с 0), в строке str. Строка str не изменяется.
-Array* FindWord(Array* str, size_t number_word)
+Array* FindWord(Array* str, size_t number_word, Array* separators)
 {
 	size_t number = 0; //Номер текущего слова 
 	char* ptr = (char*)str->data; //Изменяющаяся переменная, хранящяя копию передаваемой строки
 	while (number != number_word)  //Цикл, который передвигает ptr до начала текущего слова 
 	{
-		while (*ptr == ' ') //Цикл сдвигающий ptr до первого символа, который не является разделителем (Например, если ptr="  abcd  efg  " и разделитель это " ", то после выполнения цикла ptr="abcd  efg  ")
+		while (CharInString(separators, *ptr)) //Цикл сдвигающий ptr до первого символа, который не является разделителем (Например, если ptr="  abcd  efg  " и разделитель это " ", то после выполнения цикла ptr="abcd  efg  ")
 			ptr++;
-		while (*ptr != ' ') //Цикл сдвигающий ptr до первого символа, который является разделителем (Например, если ptr="abcd  efg  " и разделитель это " ", то после выполнения цикла ptr="  efg  ")
+		while (!CharInString(separators, *ptr)) //Цикл сдвигающий ptr до первого символа, который является разделителем (Например, если ptr="abcd  efg  " и разделитель это " ", то после выполнения цикла ptr="  efg  ")
 			ptr++;
-		while (*ptr == ' ') //То же, что и первый цикл
+		while (CharInString(separators, *ptr)) //То же, что и первый цикл
 			ptr++;
 		//Все три цикла сдвигают ptr до начала следующего слова (Например, если ptr="  abcd  efg  " и разделитель это " ", то после выполнения трёх циклов ptr="efg  ")
 		number++; //Увеличиваем номер текущего слова на единицу
 	}
 	char* buff = ptr; //Сохраняе строку, начинающююся с искомого слова в buff
 	size_t size_word = 0; //Размер слова
-	while (*ptr++ != ' ') //Цикл, в котором находим размер нашего слова 
+	while (!CharInString(separators, *ptr++)) //Цикл, в котором находим размер нашего слова 
 		size_word++;
 	ptr = buff; //Возвращаем в ptr сохранённую строку
 	char* word = (char*)malloc(sizeof(char)*size_word+sizeof('\0')); //Выделяем память под искомое слово
 	if (!word) //Сообщаем об ошибке, если word=NULL
 		system("cls"), printf("Out of memmory"), exit(0);
 	buff=word; //В buff записываем адрес, где будет хранится слово
-	while (*ptr != ' ') //Цикл, в котором записываем слово
+	while (!CharInString(separators, *ptr)) //Цикл, в котором записываем слово
 		*buff++ = *ptr++;
 	*buff = '\0'; //В конце слова ставим '\0'
 	Array* word_str = CreateString(word); //Возвращаем искомое слово, как строку
@@ -301,16 +309,16 @@ bool WordInList(Array* list, Array* word, size_t* position_in_list)
 	return false;
 }
 
-size_t NumberDifferentWords(Array* str)
+size_t NumberDifferentWords(Array* str, Array* separators)
 {
 	size_t count_repeat = 0;
-	size_t number_words = NumberWords(str);
+	size_t number_words = NumberWords(str, separators);
 	for (size_t i = 0; i < number_words; i++)
 	{
 		for (size_t j = i + 1; j < number_words; j++)
 		{
-			Array* word1 = FindWord(str, i);
-			Array* word2 = FindWord(str, j);
+			Array* word1 = FindWord(str, i, separators);
+			Array* word2 = FindWord(str, j, separators);
 			if (EqualStrings(word1, word2))
 			{
 				count_repeat++;
@@ -323,17 +331,15 @@ size_t NumberDifferentWords(Array* str)
 	return number_words - count_repeat;
 }
 
-Array* FillWordList(Array* str)
+Array* FillWordList(Array* str, Array* separators)
 {
-	Array* list = CreateWordList(NumberDifferentWords(str));
+	Array* list = CreateWordList(NumberDifferentWords(str, separators));
 	list->count = 0;
-	if (!list)
-		system("cls"), printf("Out of memmory"), exit(0);
-	size_t number_words = NumberWords(str);
+	size_t number_words = NumberWords(str, separators);
 	size_t position_in_list;
 	for (size_t i = 0; i < number_words; i++)
 	{
-		Array* this_word = FindWord(str, i);
+		Array* this_word = FindWord(str, i, separators);
 		if (WordInList(list, this_word, &position_in_list))
 		{
 			PushBack(GetWord(list, position_in_list)->positions, &i);

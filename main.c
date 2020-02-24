@@ -31,6 +31,7 @@ int SelectedMenuItem()
 int main()
 {
 	Array* str = CreateEmptyString();
+	Array* separators = CreateString(" ;,./()!?\"");
 	int item; //Выбранный пункт меню
 	do
 	{
@@ -51,7 +52,7 @@ int main()
 			}
 			case 2:
 			{
-				Array* list = FillWordList(str);
+				Array* list = FillWordList(str, separators);
 				OutWordList(list);
 				DeleteList(list);
 				system("pause");
@@ -66,4 +67,5 @@ int main()
 		}
 	} while (item != COUNT_ITEMS);
 	DeleteArray(str);
+	DeleteArray(separators);
 }
