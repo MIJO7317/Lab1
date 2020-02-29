@@ -27,46 +27,63 @@ void ClearStdin()
 	while (getchar()!='\n');
 }
 
+size_t Size(Array* arr)
+{
+	return arr->count;
+}
+
 void Delete(void* ptr)
 {
+	if (!ptr) return;
 	free(ptr);
 }
 
 void DeleteArray(Array* arr)
 {
+	if (!arr) return;
 	Delete(arr->data);
 	Delete(arr);
 }
 
 Word* GetWord(Array* list, size_t index)
 {
-	return index < list->count ? (Word*)list->data + index : NULL;
+	return index < Size(list) ? (Word*)list->data + index : NULL;
+}
+
+void DeleteWord(Word* word)
+{
+	if (!word) return;
+	DeleteArray(word->word_str);
+	DeleteArray(word->positions);
+	Delete(word);
 }
 
 void DeleteList(Array* list)
 {
-	for (size_t i = 0; i < list->count; i++)
+	if (!list) return;
+	for (size_t i = 0; i < Size(list); i++)
 	{
-		DeleteArray(GetWord(list, i)->word_str);
-		DeleteArray(GetWord(list, i)->positions);
+		DeleteArray(GetWord(list,i)->word_str);
+		DeleteArray(GetWord(list,i)->positions);
 	}
-	DeleteArray(list);
+	Delete(list->data);
+	Delete(list);
 }
 
 char GetCharElement(Array* str, size_t index)
 {
-	return index<str->count ? *((char*)str->data + index) : 0;
+	return index < Size(str) ? *((char*)str->data + index) : 0;
 }
 
 int GetIntElement(Array* arr, size_t index)
 {
-	return index < arr->count ? *((int*)arr->data + index) : 0;
+	return index < Size(arr) ? *((int*)arr->data + index) : 0;
 }
 
 void SetElement(Array* arr, size_t index, void* value)
 {
 	void* ptr = (char*)arr->data + index * arr->elem_size;
-	memcpy(ptr,value,arr->elem_size);
+	memmove(ptr, value, arr->elem_size);
 }
 
 Array* CreateDefault(size_t count, size_t elem_size, void* default_element)
@@ -80,7 +97,7 @@ Array* CreateDefault(size_t count, size_t elem_size, void* default_element)
 	arr->data = malloc(arr->capacity * elem_size);
 	if (!arr->data)
 		system("cls"), printf("Out of memmory"), exit(0);
-	for (size_t i = 0; i < arr->count; i++)
+	for (size_t i = 0; i < Size(arr); i++)
 		SetElement(arr, i, default_element);
 	return arr;
 }
@@ -108,14 +125,9 @@ size_t CharPointerSize(char* str)
 	return size;
 }
 
-size_t Size(Array* arr)
-{
-	return arr->count;
-}
-
 Array* CreateEmptyString()
 {
-	int default_element = '\0';
+	char default_element = '\0';
 	Array* arr = CreateDefault(1, sizeof(char), &default_element);
 	arr->count--;
 	arr->capacity--;
@@ -133,37 +145,40 @@ Array* CreateString(char* str)
 	return arr;
 }
 
+
+//Добаляет элемент в конец строки
+void PushBackChar(Array* str, char simbol)
+{
+	char t_zero = '\0';
+	if (str->capacity <= str->count)
+	{
+		str->capacity += str->capacity ? str->capacity : DEFAULT_BUFFER_SIZE;
+		void* ptr = realloc(str->data, sizeof(char) * str->capacity + sizeof('\0'));
+		if (!ptr)
+			system("cls"), printf("Out of memmory"), exit(0);
+		str->data = (char*)ptr;
+	}
+	SetElement(str, str->count, &simbol);
+	SetElement(str, str->count + 1, &t_zero);
+	str->count++;
+}
+
 //Ввод строки с консоли
 Array* InputString()
 {
-	size_t buffer_size = 256;
-	char* str = (char*)malloc(sizeof(char) * buffer_size + sizeof('\0'));
+	Array* str = CreateEmptyString();
 	if (!str)
 		system("cls"), printf("Out of memmory"), exit(0);
 	char simbol;
-	size_t i;
-	for (i = 0; (simbol = (char)getchar()) != '\n'; i++)
-	{
-		if (i > buffer_size-1)
-		{
-			buffer_size *= 2;
-			char* ptr = (char*)realloc(str, sizeof(char) * buffer_size + sizeof('\0'));
-			if(!ptr)
-				system("cls"), printf("Out of memmory"), exit(0);
-			str = ptr;
-		}
-		str[i] = simbol;
-	}
-	str[i] = '\0';
-	Array* arr = CreateString(str);
-	free(str);
-	return arr;
+	for (size_t i = 0; (simbol = (char)getchar()) != '\n'; i++)
+		PushBackChar(str, simbol);
+	return str;
 }
 
 void OutString(Array* str)
 {
 	for (size_t i = 0; i < str->count; i++)
-		printf("%c",GetCharElement(str, i));
+		printf("%c", tolower(GetCharElement(str, i)));
 }
 
 void OutIntArray(Array* arr)
@@ -198,8 +213,6 @@ Array* CreateWordList(size_t count)
 	word->word_str = CreateEmptyString();
 	word->positions = CreateInt(0);
 	Array* list = CreateDefault(count, sizeof(Word), word);
-	DeleteArray(word->word_str);
-	DeleteArray(word->positions);
 	Delete(word);
 	return list;
 }
@@ -225,33 +238,16 @@ size_t NumberWords(Array* str, Array* separators)
 //Добавляет элемент в конец массива (не работает со строками, для них используйте процедуру PushBackChar)
 void PushBack(Array* arr, void* value)
 {
-	if (arr->capacity < arr->count + 1)
+	if (arr->capacity <= arr->count)
 	{
 		arr->capacity += arr->capacity ? arr->capacity : DEFAULT_BUFFER_SIZE;
 		void* ptr = realloc(arr->data, arr->elem_size * arr->capacity);
 		if (!ptr)
 			system("cls"), printf("Out of memmory"), exit(0);
-		arr->data = ptr;
+		arr->data = (Array*)ptr;
 	}
 	SetElement(arr, arr->count, value);
 	arr->count++;
-}
-
-//Добаляет элемент в конец строки
-void PushBackChar(Array* str, char simbol)
-{
-	char t_zero = '\0';
-	if (str->capacity < str->count + 1)
-	{
-		str->capacity += str->capacity ? str->capacity : DEFAULT_BUFFER_SIZE;
-		void* ptr = realloc(str->data, sizeof(char) * str->capacity + sizeof('\0'));
-		if (!ptr)
-			system("cls"), printf("Out of memmory"), exit(0);
-		str->data = (char*)ptr;
-	}
-	SetElement(str, str->count, &simbol);
-	SetElement(str, str->count + 1, &t_zero);
-	str->count++;
 }
 
 //Функция нахождения слова, находящегося по номеру number_word (начиная с 0), в строке str. Строка str не изменяется.
@@ -293,7 +289,7 @@ bool EqualStrings(Array* str1, Array* str2)
 	if (Size(str1) != Size(str2))
 		return false;
 	for (size_t i = 0; i < Size(str1); i++)
-		if (toupper(GetCharElement(str1,i)) != toupper(GetCharElement(str2,i)))
+		if (tolower(GetCharElement(str1,i)) != tolower(GetCharElement(str2,i)))
 			return false;
 	return true;
 }
@@ -306,6 +302,23 @@ bool WordInList(Array* list, Array* word, size_t* position_in_list)
 			*position_in_list = i;
 			return true;
 		}
+	return false;
+}
+
+bool WordInString(Array* str, Array* word, Array* separators)
+{
+	for (size_t i = 0; i < NumberWords(str, separators); i++)
+	{
+		Array* word_in_str = FindWord(str, i, separators);
+		if (!word_in_str)
+			system("cls"), printf("Out of memmory"), exit(0);
+		if (EqualStrings(word_in_str, word))
+		{
+			DeleteArray(word_in_str);
+			return true;
+		}
+		DeleteArray(word_in_str);
+	}
 	return false;
 }
 
@@ -331,15 +344,19 @@ size_t NumberDifferentWords(Array* str, Array* separators)
 	return number_words - count_repeat;
 }
 
-Array* FillWordList(Array* str, Array* separators)
+Array* FillWordList(Array* str, Array* separators, Array* ban_dictionary)
 {
-	Array* list = CreateWordList(NumberDifferentWords(str, separators));
-	list->count = 0;
+	Array* list = CreateWordList(0);
 	size_t number_words = NumberWords(str, separators);
 	size_t position_in_list;
 	for (size_t i = 0; i < number_words; i++)
 	{
 		Array* this_word = FindWord(str, i, separators);
+		if (WordInString(ban_dictionary, this_word, separators))
+		{
+			DeleteArray(this_word); 
+			continue;
+		}
 		if (WordInList(list, this_word, &position_in_list))
 		{
 			PushBack(GetWord(list, position_in_list)->positions, &i);
@@ -353,8 +370,8 @@ Array* FillWordList(Array* str, Array* separators)
 			word->word_str = this_word;
 			word->positions = CreateInt(1);
 			SetElement(word->positions, 0, &i);
-			SetElement(list, list->count, word);
-			list->count++;
+			PushBack(list, word);
+			Delete(word);
 		}
 	}
 	return list;

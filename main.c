@@ -1,16 +1,18 @@
 #include<stdio.h>
 #include<stdlib.h>
+#include<locale.h>
 #include"Header.h"
 
-#define COUNT_ITEMS 4 //Количество пунктов меню
+#define COUNT_ITEMS 5 //Количество пунктов меню
 
 void Menu()
 {
 	system("cls");
 	printf("1) Input string\n");
-	printf("2) Show positions of words\n");
-	printf("3) Test\n");
-	printf("4) Exit\n");
+	printf("2) Add ban dictionary\n");
+	printf("3) Show positions of words\n");
+	printf("4) Test\n");
+	printf("5) Exit\n");
 }
 
 int SelectedMenuItem()
@@ -30,8 +32,10 @@ int SelectedMenuItem()
 
 int main()
 {
+	setlocale(LC_ALL,"Russian_Russia.866");
 	Array* str = CreateEmptyString();
-	Array* separators = CreateString(" ;,./()!?\"");
+	Array* separators = CreateString(" ;,./|()!?\"\\");
+	Array* ban_dictionary = CreateEmptyString();
 	int item; //Выбранный пункт меню
 	do
 	{
@@ -44,22 +48,29 @@ int main()
 				printf("Input string with words:\n");
 				DeleteArray(str);
 				str = InputString();
-				printf("Your string: ");
-				OutString(str);
-				printf("\n");
 				system("pause");
 				break;
 			}
 			case 2:
 			{
-				Array* list = FillWordList(str, separators);
-				OutWordList(list);
-				DeleteList(list);
+				DeleteArray(ban_dictionary);
+				printf("Input ban dictionary:\n");
+				ban_dictionary = InputString();
 				system("pause");
 				break;
 			}
 			case 3:
 			{
+				Array* list = FillWordList(str, separators, ban_dictionary);
+				printf("Your string: ");
+				OutString(str);
+				printf("\n");
+				printf("Your ban dictionary: ");
+				OutString(ban_dictionary);
+				printf("\n");
+				OutWordList(list);
+				DeleteList(list);
+				system("pause");
 				break;
 			}
 			default:
