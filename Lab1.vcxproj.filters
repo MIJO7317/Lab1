@@ -18,8 +18,16 @@
     <ClCompile Include="main.c">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
-    <ClCompile Include="Header.h">
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="DinamicArray.h">
       <Filter>Файлы заголовков</Filter>
-    </ClCompile>
+    </ClInclude>
+    <ClInclude Include="Headers.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="DinamicArrayUI.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

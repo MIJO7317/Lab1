@@ -1,9 +1,15 @@
-#include<stdio.h>
-#include<stdlib.h>
-#include<locale.h>
-#include"Header.h"
+#include"Headers.h"
 
 #define COUNT_ITEMS 5 //Количество пунктов меню
+
+typedef enum MenuItems
+{
+	Input_String = 1,
+	Add_BanDictionary,
+	Show_PositionsOfWords,
+	Test,
+	Exit
+} MenuItems;
 
 void Menu()
 {
@@ -43,7 +49,7 @@ int main()
 		system("cls");
 		switch (item)
 		{
-			case 1:
+			case Input_String:
 			{
 				printf("Input string with words:\n");
 				DeleteArray(str);
@@ -51,7 +57,7 @@ int main()
 				system("pause");
 				break;
 			}
-			case 2:
+			case Add_BanDictionary:
 			{
 				DeleteArray(ban_dictionary);
 				printf("Input ban dictionary:\n");
@@ -59,7 +65,7 @@ int main()
 				system("pause");
 				break;
 			}
-			case 3:
+			case Show_PositionsOfWords:
 			{
 				Array* list = FillWordList(str, separators, ban_dictionary);
 				printf("Your string: ");
@@ -71,6 +77,10 @@ int main()
 				OutWordList(list);
 				DeleteList(list);
 				system("pause");
+				break;
+			}
+			case Test:
+			{
 				break;
 			}
 			default:
