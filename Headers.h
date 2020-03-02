@@ -7,4 +7,4 @@
 #include<ctype.h>
 #include<locale.h>
 #include"DinamicArrayUI.h"
-//#include<vld.h>
+#include<vld.h>

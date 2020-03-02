@@ -1,4 +1,10 @@
 #include"Headers.h"
+#include"TestsDinamicArray.h"
+
+
+#define _CRTDBG_MAP_ALLOC
+//Подключение библиотеки на проверку утечки памяти:
+#include <crtdbg.h>
 
 #define COUNT_ITEMS 5 //Количество пунктов меню
 
@@ -14,11 +20,11 @@ typedef enum MenuItems
 void Menu()
 {
 	system("cls");
-	printf("1) Input string\n");
-	printf("2) Add ban dictionary\n");
-	printf("3) Show positions of words\n");
-	printf("4) Test\n");
-	printf("5) Exit\n");
+	printf("%s1)%s Input string\n", YELLOW, RESET);
+	printf("%s2)%s Add ban dictionary\n", YELLOW, RESET);
+	printf("%s3)%s Show positions of words\n", YELLOW, RESET);
+	printf("%s4)%s Test\n", YELLOW, RESET);
+	printf("%s5)%s Exit\n", YELLOW, RESET);
 }
 
 int SelectedMenuItem()
@@ -28,7 +34,7 @@ int SelectedMenuItem()
 	do
 	{
 		Menu();
-		printf("Please, input number item: ");
+		printf("%sPlease, input number item: %s", CYAN, RESET);
 		result = scanf_s("%d", &number_item);
 		!result ? scanf_s("%*s") : 0;
 	} while (!result || number_item>COUNT_ITEMS || number_item<=0);
@@ -40,7 +46,7 @@ int main()
 {
 	setlocale(LC_ALL,"Russian_Russia.866");
 	Array* str = CreateEmptyString();
-	Array* separators = CreateString(" ;,./|()!?\"\\");
+	Array* separators = CreateString("<>;, ./|()!?\"\\");
 	Array* ban_dictionary = CreateEmptyString();
 	int item; //Выбранный пункт меню
 	do
@@ -51,7 +57,10 @@ int main()
 		{
 			case Input_String:
 			{
-				printf("Input string with words:\n");
+				printf("%sSeparators: %s", YELLOW, RESET);
+				OutString(separators);
+				printf("\n");
+				printf("%sInput string with words:%s\n", CYAN, RESET);
 				DeleteArray(str);
 				str = InputString();
 				system("pause");
@@ -59,8 +68,11 @@ int main()
 			}
 			case Add_BanDictionary:
 			{
+				printf("%sSeparators: %s", YELLOW, RESET);
+				OutString(separators);
+				printf("\n");
 				DeleteArray(ban_dictionary);
-				printf("Input ban dictionary:\n");
+				printf("%sInput ban dictionary:%s\n", CYAN, RESET);
 				ban_dictionary = InputString();
 				system("pause");
 				break;
@@ -68,10 +80,10 @@ int main()
 			case Show_PositionsOfWords:
 			{
 				Array* list = FillWordList(str, separators, ban_dictionary);
-				printf("Your string: ");
+				printf("%sYour string: %s", YELLOW, RESET);
 				OutString(str);
 				printf("\n");
-				printf("Your ban dictionary: ");
+				printf("%sYour ban dictionary: %s", YELLOW, RESET);
 				OutString(ban_dictionary);
 				printf("\n");
 				OutWordList(list);
@@ -81,6 +93,20 @@ int main()
 			}
 			case Test:
 			{
+				_CrtMemState ms;
+				_CrtMemCheckpoint(&ms);
+				TestIntArray();
+				printf("\n");
+				TestString();
+				printf("\n");
+				TestList();
+				printf("\n");
+				_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_FILE);
+				_CrtSetReportFile(_CRT_WARN, _CRTDBG_FILE_STDOUT);
+				printf(YELLOW);
+				_CrtMemDumpAllObjectsSince(&ms);
+				printf(RESET);
+				system("pause");
 				break;
 			}
 			default:
@@ -89,4 +115,5 @@ int main()
 	} while (item != COUNT_ITEMS);
 	DeleteArray(str);
 	DeleteArray(separators);
+	DeleteArray(ban_dictionary);
 }

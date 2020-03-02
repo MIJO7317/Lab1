@@ -1,10 +1,26 @@
 #pragma once
-#include"DinamicArray.h"
+
+#define RESET   "\033[0m"
+#define RED     "\033[0;31m"
+#define GREEN   "\033[0;32m"
+#define YELLOW  "\033[1;33m"
+#define CYAN	"\033[0;36m"
+
+/*—труктуры:*/
+
+//—труктура динамического массива
+typedef struct Array Array;
+//—труктура слова с динамическим массивом позиций
+typedef struct Word Word;
 
 /*“ехнические функции:*/
 
 //ќчистка потока ввода Stdin от символов
 void ClearStdin();
+//¬ывод сообщени€ об ошибке
+void Error(const char* msg);
+//¬ывод об успешном выполнении
+void Success(const char* msg);
 
 /*‘ункции определени€ размера:*/
 
@@ -13,12 +29,16 @@ size_t Size(Array* arr);
 
 /*‘ункции получени€ элемента:*/
 
-//¬озвращает указатель на слово, наход€щеес€ под номером index в списке слов list
+//¬озвращает указатель на слово, наход€щеес€ под номером index в списке слов list, если index выходит за пределы списка list, то возвращает NULL
 Word* GetWord(Array* list, size_t index);
-//¬озвращает символ под номером index из строки str
+//¬озвращает строку из данного слова, если word это NULL, то вернет NULL
+Array* GetWordStr(Word* word);
+//¬озвращает массив позиций из данного слова, если word это NULL, то вернет NULL
+Array* GetWordPositions(Word* word);
+//¬озвращает символ под номером index из строки str, если index выходит за пределы строки str, то возвращает '\0'
 char GetCharElement(Array* str, size_t index);
-//¬озвращает целое число под номером index в динамическом массиве arr
-int GetIntElement(Array* arr, size_t index);
+//¬озвращает указатель на целое число под номером index в динамическом массиве arr, если index выходит за пределы массива arr, то возвращает NULL
+int* GetIntElement(Array* arr, size_t index);
 
 /*ƒеструкторы:*/
 
@@ -72,6 +92,8 @@ size_t NumberWords(Array* str, Array* separators);
 Array* FindWord(Array* str, size_t number_word, Array* separators);
 //¬озвращает true, если строки str1 и str2 равны, без учета регистра, в противном случае возвращает false
 bool EqualStrings(Array* str1, Array* str2);
+//¬озвращает true, если слово word типа Array* находитс€ в списке list и записывет номер позиции в position_in_list, в противном случае возвращает false и position_in_list не мен€етс€
+bool WordInList(Array* list, Array* word, size_t* position_in_list);
 //¬озвращает true, если слово word типа Array* находитс€ в строке str с разделител€ми, наход€щимис€ в строке separators, в противном случае возвращает false
 bool WordInString(Array* str, Array* word, Array* separators);
 //¬озвращает количество различных слов в строке str с разделител€ми, наход€щимис€ в строке separators

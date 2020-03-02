@@ -1,4 +1,3 @@
-#pragma once
 #include"Headers.h"
 
 #define DEFAULT_BUFFER_SIZE 8
@@ -27,6 +26,23 @@ void ClearStdin()
 {
 	while (getchar() != '\n');
 }
+//Вывод сообщения об ошибке
+void Error(const char* msg)
+{
+	printf(RED);
+	printf(msg);
+	printf(RESET);
+	printf("\n");
+	system("pause");
+	exit(0);
+}
+//Вывод об успешном выполнении
+void Success(const char* msg)
+{
+	printf(msg);
+	printf(" - %sSuccess%s\n", GREEN, RESET);
+}
+
 
 /*Функции определения размера:*/
 
@@ -47,20 +63,30 @@ size_t CharPointerSize(char* str)
 
 /*Функции получения элемента:*/
 
-//Возвращает указатель на слово, находящееся под номером index в списке слов list
+//Возвращает указатель на слово, находящееся под номером index в списке слов list, если index выходит за пределы списка list, то возвращает NULL
 Word* GetWord(Array* list, size_t index)
 {
 	return index < Size(list) ? (Word*)list->data + index : NULL;
 }
-//Возвращает символ под номером index из строки str
+//Возвращает строку из данного слова, если word это NULL, то вернет NULL
+Array* GetWordStr(Word* word) 
+{
+	return word ? word->word_str : NULL;
+}
+//Возвращает массив позиций из данного слова, если word это NULL, то вернет NULL
+Array* GetWordPositions(Word* word)
+{
+	return word ? word->positions : NULL;
+}
+//Возвращает символ под номером index из строки str, если index выходит за пределы строки str, то возвращает '\0'
 char GetCharElement(Array* str, size_t index)
 {
 	return index < Size(str) ? *((char*)str->data + index) : 0;
 }
-//Возвращает целое число под номером index в динамическом массиве arr
-int GetIntElement(Array* arr, size_t index)
+//Возвращает указатель на целое число под номером index в динамическом массиве arr, если index выходит за пределы массива arr, то возвращает NULL
+int* GetIntElement(Array* arr, size_t index)
 {
-	return index < Size(arr) ? *((int*)arr->data + index) : 0;
+	return index < Size(arr) ? (int*)arr->data + index : NULL;
 }
 
 /*Деструкторы:*/
@@ -68,28 +94,35 @@ int GetIntElement(Array* arr, size_t index)
 //Освобождение памяти указателя ptr
 void Delete(void* ptr)
 {
-	if (!ptr) return;
+	if (!ptr)
+		system("cls"), Error("Attempt to free null pointer");
 	free(ptr);
+	ptr = NULL;
 }
 //Освобождение памяти динамического массива arr
 void DeleteArray(Array* arr)
 {
-	if (!arr) return;
+	if (!arr)
+		system("cls"), Error("Attempt to free null pointer");
 	Delete(arr->data);
 	Delete(arr);
+	arr = NULL;
 }
 //Освобождение памяти слова word
 void DeleteWord(Word* word)
 {
-	if (!word) return;
+	if (!word)
+		system("cls"), Error("Attempt to free null pointer");
 	DeleteArray(word->word_str);
 	DeleteArray(word->positions);
 	Delete(word);
+	word = NULL;
 }
 //Освобождение памяти списка слов list
 void DeleteList(Array* list)
 {
-	if (!list) return;
+	if (!list)
+		system("cls"), Error("Attempt to free null pointer");
 	for (size_t i = 0; i < Size(list); i++)
 	{
 		DeleteArray(GetWord(list, i)->word_str);
@@ -97,6 +130,7 @@ void DeleteList(Array* list)
 	}
 	Delete(list->data);
 	Delete(list);
+	list = NULL;
 }
 
 /*Функции изменения/добавления элемента:*/
@@ -104,6 +138,8 @@ void DeleteList(Array* list)
 //Копирует значение value в элемент динамического массива arr под номером index
 void SetElement(Array* arr, size_t index, void* value)
 {
+	if (index >= arr->capacity)
+		system("cls"), Error("Buffer Overflow");
 	void* ptr = (char*)arr->data + index * arr->elem_size;
 	memmove(ptr, value, arr->elem_size);
 }
@@ -111,12 +147,12 @@ void SetElement(Array* arr, size_t index, void* value)
 void PushBackChar(Array* str, char simbol)
 {
 	char t_zero = '\0';
-	if (str->capacity <= str->count)
+	if (str->capacity <= str->count+1)
 	{
 		str->capacity += str->capacity ? str->capacity : DEFAULT_BUFFER_SIZE;
 		void* ptr = realloc(str->data, sizeof(char) * str->capacity + sizeof('\0'));
 		if (!ptr)
-			system("cls"), printf("Out of memmory"), exit(0);
+			system("cls"), Error("Out of memmory");
 		str->data = (char*)ptr;
 	}
 	SetElement(str, str->count, &simbol);
@@ -131,7 +167,7 @@ void PushBack(Array* arr, void* value)
 		arr->capacity += arr->capacity ? arr->capacity : DEFAULT_BUFFER_SIZE;
 		void* ptr = realloc(arr->data, arr->elem_size * arr->capacity);
 		if (!ptr)
-			system("cls"), printf("Out of memmory"), exit(0);
+			system("cls"), Error("Out of memmory");
 		arr->data = (Array*)ptr;
 	}
 	SetElement(arr, arr->count, value);
@@ -145,13 +181,13 @@ Array* Create(size_t count, size_t elem_size)
 {
 	Array* arr = (Array*)malloc(sizeof(Array));
 	if (!arr)
-		system("cls"), printf("Out of memmory"), exit(0);
+		system("cls"), Error("Out of memmory");
 	arr->capacity = count;
 	arr->count = count;
 	arr->elem_size = elem_size;
 	arr->data = malloc(arr->capacity * elem_size);
 	if (!arr->data)
-		system("cls"), printf("Out of memmory"), exit(0);
+		system("cls"), Error("Out of memmory");
 	return arr;
 }
 //Создание динамического массива размера count и с элементами размера elem_size и заполнение его начальными значениями default_element 
@@ -191,13 +227,17 @@ Array* CreateInt(size_t count)
 //Создание списка слов размера count (все элементы по умолчанию это пустые слова)
 Array* CreateWordList(size_t count)
 {
-	Word* word = (Word*)malloc(sizeof(Word));
-	if (!word)
-		system("cls"), printf("Out of memmory"), exit(0);
-	word->word_str = CreateEmptyString();
-	word->positions = CreateInt(0);
-	Array* list = CreateDefault(count, sizeof(Word), word);
-	Delete(word);
+	Array* list = Create(count, sizeof(Word));
+	for (size_t i = 0; i < Size(list); i++)
+	{
+		Word* word = (Word*)malloc(sizeof(Word));
+		if (!word)
+			system("cls"), Error("Out of memmory");
+		word->word_str = CreateEmptyString();
+		word->positions = CreateInt(0);
+		SetElement(list, i, word);
+		Delete(word);
+	}
 	return list;
 }
 //Создание строки из консоли
@@ -205,7 +245,7 @@ Array* InputString()
 {
 	Array* str = CreateEmptyString();
 	if (!str)
-		system("cls"), printf("Out of memmory"), exit(0);
+		system("cls"), Error("Out of memmory");
 	char simbol;
 	for (size_t i = 0; (simbol = (char)getchar()) != '\n'; i++)
 		PushBackChar(str, simbol);
@@ -224,7 +264,7 @@ void OutString(Array* str)
 void OutIntArray(Array* arr)
 {
 	for (size_t i = 0; i < Size(arr); i++)
-		printf("%d ", GetIntElement(arr, i));
+		printf("%d ", *GetIntElement(arr, i));
 	printf("\n");
 }
 //Вывод списка слов с их позициями
@@ -232,9 +272,11 @@ void OutWordList(Array* list)
 {
 	for (size_t i = 0; i < list->count; i++)
 	{
-		printf("Word %d: ", i);
+		printf("%sWord %s", YELLOW, RESET);
+		printf("%s%d%s", CYAN, i, RESET);
+		printf("%s: %s", YELLOW, RESET);
 		OutString(GetWord(list, i)->word_str);
-		printf("\t\t\tPositions: ");
+		printf("\t\t\t%sPositions: %s", YELLOW, RESET);
 		OutIntArray(GetWord(list, i)->positions);
 	}
 }
@@ -282,7 +324,7 @@ Array* FindWord(Array* str, size_t number_word, Array* separators)
 	ptr = buff; //Возвращаем в ptr сохранённую строку
 	char* word = (char*)malloc(sizeof(char) * size_word + sizeof('\0')); //Выделяем память под искомое слово
 	if (!word) //Сообщаем об ошибке, если word=NULL
-		system("cls"), printf("Out of memmory"), exit(0);
+		system("cls"), Error("Out of memmory");
 	buff = word; //В buff записываем адрес, где будет хранится слово
 	while (!CharInString(separators, *ptr)) //Цикл, в котором записываем слово
 		*buff++ = *ptr++;
@@ -319,7 +361,7 @@ bool WordInString(Array* str, Array* word, Array* separators)
 	{
 		Array* word_in_str = FindWord(str, i, separators);
 		if (!word_in_str)
-			system("cls"), printf("Out of memmory"), exit(0);
+			system("cls"), Error("Out of memmory");
 		if (EqualStrings(word_in_str, word))
 		{
 			DeleteArray(word_in_str);
@@ -343,6 +385,8 @@ size_t NumberDifferentWords(Array* str, Array* separators)
 			if (EqualStrings(word1, word2))
 			{
 				count_repeat++;
+				DeleteArray(word1);
+				DeleteArray(word2);
 				break;
 			}
 			DeleteArray(word1);
@@ -374,7 +418,7 @@ Array* FillWordList(Array* str, Array* separators, Array* ban_dictionary)
 		{
 			Word* word = (Word*)malloc(sizeof(Word));
 			if (!word)
-				system("cls"), printf("Out of memmory"), exit(0);
+				system("cls"), Error("Out of memmory");
 			word->word_str = this_word;
 			word->positions = CreateInt(1);
 			SetElement(word->positions, 0, &i);
@@ -384,4 +428,3 @@ Array* FillWordList(Array* str, Array* separators, Array* ban_dictionary)
 	}
 	return list;
 }
-
