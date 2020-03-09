@@ -1,12 +1,12 @@
-#include"Headers.h"
+п»ї#include"Headers.h"
 #include"TestsDinamicArray.h"
 
 
 #define _CRTDBG_MAP_ALLOC
-//Подключение библиотеки на проверку утечки памяти:
+//РџРѕРґРєР»СЋС‡РµРЅРёРµ Р±РёР±Р»РёРѕС‚РµРєРё РЅР° РїСЂРѕРІРµСЂРєСѓ СѓС‚РµС‡РєРё РїР°РјСЏС‚Рё:
 #include <crtdbg.h>
 
-#define COUNT_ITEMS 5 //Количество пунктов меню
+#define COUNT_ITEMS 5 //РљРѕР»РёС‡РµСЃС‚РІРѕ РїСѓРЅРєС‚РѕРІ РјРµРЅСЋ
 
 typedef enum MenuItems
 {
@@ -29,8 +29,8 @@ void Menu()
 
 int SelectedMenuItem()
 {
-	int number_item; //Пункт меню, который выбирает пользователь
-	int result; //Результат работы функции scanf_s()
+	int number_item; //РџСѓРЅРєС‚ РјРµРЅСЋ, РєРѕС‚РѕСЂС‹Р№ РІС‹Р±РёСЂР°РµС‚ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊ
+	int result; //Р РµР·СѓР»СЊС‚Р°С‚ СЂР°Р±РѕС‚С‹ С„СѓРЅРєС†РёРё scanf_s()
 	do
 	{
 		Menu();
@@ -48,7 +48,7 @@ int main()
 	Array* str = CreateEmptyString();
 	Array* separators = CreateString("<>;, ./|()!?\"\\");
 	Array* ban_dictionary = CreateEmptyString();
-	int item; //Выбранный пункт меню
+	int item; //Р’С‹Р±СЂР°РЅРЅС‹Р№ РїСѓРЅРєС‚ РјРµРЅСЋ
 	do
 	{
 		item = SelectedMenuItem();
