@@ -1,10 +1,10 @@
-#include"Headers.h"
+п»ї#include"Headers.h"
 
 #define DEFAULT_BUFFER_SIZE 8
 
-/*Структуры:*/
+/*РЎС‚СЂСѓРєС‚СѓСЂС‹:*/
 
-//Структура динамического массива
+//РЎС‚СЂСѓРєС‚СѓСЂР° РґРёРЅР°РјРёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР°
 typedef struct Array
 {
 	void* data;
@@ -12,21 +12,21 @@ typedef struct Array
 	size_t capacity;
 	size_t elem_size;
 } Array;
-//Структура слова с динамическим массивом позиций
+//РЎС‚СЂСѓРєС‚СѓСЂР° СЃР»РѕРІР° СЃ РґРёРЅР°РјРёС‡РµСЃРєРёРј РјР°СЃСЃРёРІРѕРј РїРѕР·РёС†РёР№
 typedef struct Word
 {
 	Array* word_str;
 	Array* positions;
 } Word;
 
-/*Технические функции:*/
+/*РўРµС…РЅРёС‡РµСЃРєРёРµ С„СѓРЅРєС†РёРё:*/
 
-//Очистка потока ввода Stdin от символов
+//РћС‡РёСЃС‚РєР° РїРѕС‚РѕРєР° РІРІРѕРґР° Stdin РѕС‚ СЃРёРјРІРѕР»РѕРІ
 void ClearStdin()
 {
 	while (getchar() != '\n');
 }
-//Вывод сообщения об ошибке
+//Р’С‹РІРѕРґ СЃРѕРѕР±С‰РµРЅРёСЏ РѕР± РѕС€РёР±РєРµ
 void Error(const char* msg)
 {
 	printf(RED);
@@ -36,7 +36,7 @@ void Error(const char* msg)
 	system("pause");
 	exit(0);
 }
-//Вывод об успешном выполнении
+//Р’С‹РІРѕРґ РѕР± СѓСЃРїРµС€РЅРѕРј РІС‹РїРѕР»РЅРµРЅРёРё
 void Success(const char* msg)
 {
 	printf(msg);
@@ -44,14 +44,14 @@ void Success(const char* msg)
 }
 
 
-/*Функции определения размера:*/
+/*Р¤СѓРЅРєС†РёРё РѕРїСЂРµРґРµР»РµРЅРёСЏ СЂР°Р·РјРµСЂР°:*/
 
-//Количество элементов динамического массива arr
+//РљРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РґРёРЅР°РјРёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР° arr
 size_t Size(Array* arr)
 {
 	return arr->count;
 }
-//Количество символов в строке str типа char*
+//РљРѕР»РёС‡РµСЃС‚РІРѕ СЃРёРјРІРѕР»РѕРІ РІ СЃС‚СЂРѕРєРµ str С‚РёРїР° char*
 size_t CharPointerSize(char* str)
 {
 	size_t size = 0;
@@ -61,37 +61,37 @@ size_t CharPointerSize(char* str)
 	return size;
 }
 
-/*Функции получения элемента:*/
+/*Р¤СѓРЅРєС†РёРё РїРѕР»СѓС‡РµРЅРёСЏ СЌР»РµРјРµРЅС‚Р°:*/
 
-//Возвращает указатель на слово, находящееся под номером index в списке слов list, если index выходит за пределы списка list, то возвращает NULL
+//Р’РѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЃР»РѕРІРѕ, РЅР°С…РѕРґСЏС‰РµРµСЃСЏ РїРѕРґ РЅРѕРјРµСЂРѕРј index РІ СЃРїРёСЃРєРµ СЃР»РѕРІ list, РµСЃР»Рё index РІС‹С…РѕРґРёС‚ Р·Р° РїСЂРµРґРµР»С‹ СЃРїРёСЃРєР° list, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµС‚ NULL
 Word* GetWord(Array* list, size_t index)
 {
 	return index < Size(list) ? (Word*)list->data + index : NULL;
 }
-//Возвращает строку из данного слова, если word это NULL, то вернет NULL
+//Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ РёР· РґР°РЅРЅРѕРіРѕ СЃР»РѕРІР°, РµСЃР»Рё word СЌС‚Рѕ NULL, С‚Рѕ РІРµСЂРЅРµС‚ NULL
 Array* GetWordStr(Word* word) 
 {
 	return word ? word->word_str : NULL;
 }
-//Возвращает массив позиций из данного слова, если word это NULL, то вернет NULL
+//Р’РѕР·РІСЂР°С‰Р°РµС‚ РјР°СЃСЃРёРІ РїРѕР·РёС†РёР№ РёР· РґР°РЅРЅРѕРіРѕ СЃР»РѕРІР°, РµСЃР»Рё word СЌС‚Рѕ NULL, С‚Рѕ РІРµСЂРЅРµС‚ NULL
 Array* GetWordPositions(Word* word)
 {
 	return word ? word->positions : NULL;
 }
-//Возвращает символ под номером index из строки str, если index выходит за пределы строки str, то возвращает '\0'
+//Р’РѕР·РІСЂР°С‰Р°РµС‚ СЃРёРјРІРѕР» РїРѕРґ РЅРѕРјРµСЂРѕРј index РёР· СЃС‚СЂРѕРєРё str, РµСЃР»Рё index РІС‹С…РѕРґРёС‚ Р·Р° РїСЂРµРґРµР»С‹ СЃС‚СЂРѕРєРё str, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµС‚ '\0'
 char GetCharElement(Array* str, size_t index)
 {
 	return index < Size(str) ? *((char*)str->data + index) : 0;
 }
-//Возвращает указатель на целое число под номером index в динамическом массиве arr, если index выходит за пределы массива arr, то возвращает NULL
+//Р’РѕР·РІСЂР°С‰Р°РµС‚ СѓРєР°Р·Р°С‚РµР»СЊ РЅР° С†РµР»РѕРµ С‡РёСЃР»Рѕ РїРѕРґ РЅРѕРјРµСЂРѕРј index РІ РґРёРЅР°РјРёС‡РµСЃРєРѕРј РјР°СЃСЃРёРІРµ arr, РµСЃР»Рё index РІС‹С…РѕРґРёС‚ Р·Р° РїСЂРµРґРµР»С‹ РјР°СЃСЃРёРІР° arr, С‚Рѕ РІРѕР·РІСЂР°С‰Р°РµС‚ NULL
 int* GetIntElement(Array* arr, size_t index)
 {
 	return index < Size(arr) ? (int*)arr->data + index : NULL;
 }
 
-/*Деструкторы:*/
+/*Р”РµСЃС‚СЂСѓРєС‚РѕСЂС‹:*/
 
-//Освобождение памяти указателя ptr
+//РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ РїР°РјСЏС‚Рё СѓРєР°Р·Р°С‚РµР»СЏ ptr
 void Delete(void* ptr)
 {
 	if (!ptr)
@@ -99,7 +99,7 @@ void Delete(void* ptr)
 	free(ptr);
 	ptr = NULL;
 }
-//Освобождение памяти динамического массива arr
+//РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ РїР°РјСЏС‚Рё РґРёРЅР°РјРёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР° arr
 void DeleteArray(Array* arr)
 {
 	if (!arr)
@@ -108,7 +108,7 @@ void DeleteArray(Array* arr)
 	Delete(arr);
 	arr = NULL;
 }
-//Освобождение памяти слова word
+//РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ РїР°РјСЏС‚Рё СЃР»РѕРІР° word
 void DeleteWord(Word* word)
 {
 	if (!word)
@@ -118,7 +118,7 @@ void DeleteWord(Word* word)
 	Delete(word);
 	word = NULL;
 }
-//Освобождение памяти списка слов list
+//РћСЃРІРѕР±РѕР¶РґРµРЅРёРµ РїР°РјСЏС‚Рё СЃРїРёСЃРєР° СЃР»РѕРІ list
 void DeleteList(Array* list)
 {
 	if (!list)
@@ -133,9 +133,9 @@ void DeleteList(Array* list)
 	list = NULL;
 }
 
-/*Функции изменения/добавления элемента:*/
+/*Р¤СѓРЅРєС†РёРё РёР·РјРµРЅРµРЅРёСЏ/РґРѕР±Р°РІР»РµРЅРёСЏ СЌР»РµРјРµРЅС‚Р°:*/
 
-//Копирует значение value в элемент динамического массива arr под номером index
+//РљРѕРїРёСЂСѓРµС‚ Р·РЅР°С‡РµРЅРёРµ value РІ СЌР»РµРјРµРЅС‚ РґРёРЅР°РјРёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР° arr РїРѕРґ РЅРѕРјРµСЂРѕРј index
 void SetElement(Array* arr, size_t index, void* value)
 {
 	if (index >= arr->capacity)
@@ -143,7 +143,7 @@ void SetElement(Array* arr, size_t index, void* value)
 	void* ptr = (char*)arr->data + index * arr->elem_size;
 	memmove(ptr, value, arr->elem_size);
 }
-//Добаляет элемент в конец строки
+//Р”РѕР±Р°Р»СЏРµС‚ СЌР»РµРјРµРЅС‚ РІ РєРѕРЅРµС† СЃС‚СЂРѕРєРё
 void PushBackChar(Array* str, char simbol)
 {
 	char t_zero = '\0';
@@ -159,7 +159,7 @@ void PushBackChar(Array* str, char simbol)
 	SetElement(str, str->count + 1, &t_zero);
 	str->count++;
 }
-//Добавляет элемент в конец массива (не работает со строками, для них используйте процедуру PushBackChar)
+//Р”РѕР±Р°РІР»СЏРµС‚ СЌР»РµРјРµРЅС‚ РІ РєРѕРЅРµС† РјР°СЃСЃРёРІР° (РЅРµ СЂР°Р±РѕС‚Р°РµС‚ СЃРѕ СЃС‚СЂРѕРєР°РјРё, РґР»СЏ РЅРёС… РёСЃРїРѕР»СЊР·СѓР№С‚Рµ РїСЂРѕС†РµРґСѓСЂСѓ PushBackChar)
 void PushBack(Array* arr, void* value)
 {
 	if (arr->capacity <= arr->count)
@@ -174,9 +174,9 @@ void PushBack(Array* arr, void* value)
 	arr->count++;
 }
 
-/*Конструкторы:*/
+/*РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂС‹:*/
 
-//Создание динамического массива размера count и с элементами размера elem_size
+//РЎРѕР·РґР°РЅРёРµ РґРёРЅР°РјРёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР° СЂР°Р·РјРµСЂР° count Рё СЃ СЌР»РµРјРµРЅС‚Р°РјРё СЂР°Р·РјРµСЂР° elem_size
 Array* Create(size_t count, size_t elem_size)
 {
 	Array* arr = (Array*)malloc(sizeof(Array));
@@ -190,7 +190,7 @@ Array* Create(size_t count, size_t elem_size)
 		system("cls"), Error("Out of memmory");
 	return arr;
 }
-//Создание динамического массива размера count и с элементами размера elem_size и заполнение его начальными значениями default_element 
+//РЎРѕР·РґР°РЅРёРµ РґРёРЅР°РјРёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР° СЂР°Р·РјРµСЂР° count Рё СЃ СЌР»РµРјРµРЅС‚Р°РјРё СЂР°Р·РјРµСЂР° elem_size Рё Р·Р°РїРѕР»РЅРµРЅРёРµ РµРіРѕ РЅР°С‡Р°Р»СЊРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё default_element 
 Array* CreateDefault(size_t count, size_t elem_size, void* default_element)
 {
 	Array* arr = Create(count, elem_size);
@@ -198,7 +198,7 @@ Array* CreateDefault(size_t count, size_t elem_size, void* default_element)
 		SetElement(arr, i, default_element);
 	return arr;
 }
-//Создание пустой строки
+//РЎРѕР·РґР°РЅРёРµ РїСѓСЃС‚РѕР№ СЃС‚СЂРѕРєРё
 Array* CreateEmptyString()
 {
 	char default_element = '\0';
@@ -207,7 +207,7 @@ Array* CreateEmptyString()
 	arr->capacity--;
 	return arr;
 }
-//Создание строки типа Array* из строки str типа char*
+//РЎРѕР·РґР°РЅРёРµ СЃС‚СЂРѕРєРё С‚РёРїР° Array* РёР· СЃС‚СЂРѕРєРё str С‚РёРїР° char*
 Array* CreateString(char* str)
 {
 	size_t length = CharPointerSize(str);
@@ -218,13 +218,13 @@ Array* CreateString(char* str)
 	arr->capacity--;
 	return arr;
 }
-//Создание динамического массива целых чисел размера count (все элементы по умолчанию 0)
+//РЎРѕР·РґР°РЅРёРµ РґРёРЅР°РјРёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР° С†РµР»С‹С… С‡РёСЃРµР» СЂР°Р·РјРµСЂР° count (РІСЃРµ СЌР»РµРјРµРЅС‚С‹ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ 0)
 Array* CreateInt(size_t count)
 {
 	int default_element = 0;
 	return CreateDefault(count, sizeof(int), &default_element);
 }
-//Создание списка слов размера count (все элементы по умолчанию это пустые слова)
+//РЎРѕР·РґР°РЅРёРµ СЃРїРёСЃРєР° СЃР»РѕРІ СЂР°Р·РјРµСЂР° count (РІСЃРµ СЌР»РµРјРµРЅС‚С‹ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЌС‚Рѕ РїСѓСЃС‚С‹Рµ СЃР»РѕРІР°)
 Array* CreateWordList(size_t count)
 {
 	Array* list = Create(count, sizeof(Word));
@@ -240,7 +240,7 @@ Array* CreateWordList(size_t count)
 	}
 	return list;
 }
-//Создание строки из консоли
+//РЎРѕР·РґР°РЅРёРµ СЃС‚СЂРѕРєРё РёР· РєРѕРЅСЃРѕР»Рё
 Array* InputString()
 {
 	Array* str = CreateEmptyString();
@@ -252,22 +252,22 @@ Array* InputString()
 	return str;
 }
 
-/*Функции вывода:*/
+/*Р¤СѓРЅРєС†РёРё РІС‹РІРѕРґР°:*/
 
-//Вывод строки
+//Р’С‹РІРѕРґ СЃС‚СЂРѕРєРё
 void OutString(Array* str)
 {
 	for (size_t i = 0; i < Size(str); i++)
 		printf("%c", tolower(GetCharElement(str, i)));
 }
-//Вывод целочисленного динамического массива
+//Р’С‹РІРѕРґ С†РµР»РѕС‡РёСЃР»РµРЅРЅРѕРіРѕ РґРёРЅР°РјРёС‡РµСЃРєРѕРіРѕ РјР°СЃСЃРёРІР°
 void OutIntArray(Array* arr)
 {
 	for (size_t i = 0; i < Size(arr); i++)
 		printf("%d ", *GetIntElement(arr, i));
 	printf("\n");
 }
-//Вывод списка слов с их позициями
+//Р’С‹РІРѕРґ СЃРїРёСЃРєР° СЃР»РѕРІ СЃ РёС… РїРѕР·РёС†РёСЏРјРё
 void OutWordList(Array* list)
 {
 	for (size_t i = 0; i < list->count; i++)
@@ -281,9 +281,9 @@ void OutWordList(Array* list)
 	}
 }
 
-/*Предикаты и сложные функции*/
+/*РџСЂРµРґРёРєР°С‚С‹ Рё СЃР»РѕР¶РЅС‹Рµ С„СѓРЅРєС†РёРё*/
 
-//Возвращает true, если в строке str найден символ simbol, в противном случае возвращает false
+//Р’РѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё РІ СЃС‚СЂРѕРєРµ str РЅР°Р№РґРµРЅ СЃРёРјРІРѕР» simbol, РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ РІРѕР·РІСЂР°С‰Р°РµС‚ false
 bool CharInString(Array* str, char simbol)
 {
 	for (size_t i = 0; i < Size(str); i++)
@@ -291,7 +291,7 @@ bool CharInString(Array* str, char simbol)
 			return true;
 	return false;
 }
-//Возвращает количество всех слов в строке str с разделителями, находящимися в строке separators
+//Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ РІСЃРµС… СЃР»РѕРІ РІ СЃС‚СЂРѕРєРµ str СЃ СЂР°Р·РґРµР»РёС‚РµР»СЏРјРё, РЅР°С…РѕРґСЏС‰РёРјРёСЃСЏ РІ СЃС‚СЂРѕРєРµ separators
 size_t NumberWords(Array* str, Array* separators)
 {
 	size_t count = 0;
@@ -301,39 +301,39 @@ size_t NumberWords(Array* str, Array* separators)
 			count++;
 	return !CharInString(separators, *(ptr - 2)) ? ++count : count;
 }
-//Создаёт и возвращает строку в которой записано слово, находящееся по номеру number_word (начиная с 0), в строке str
+//РЎРѕР·РґР°С‘С‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ СЃС‚СЂРѕРєСѓ РІ РєРѕС‚РѕСЂРѕР№ Р·Р°РїРёСЃР°РЅРѕ СЃР»РѕРІРѕ, РЅР°С…РѕРґСЏС‰РµРµСЃСЏ РїРѕ РЅРѕРјРµСЂСѓ number_word (РЅР°С‡РёРЅР°СЏ СЃ 0), РІ СЃС‚СЂРѕРєРµ str
 Array* FindWord(Array* str, size_t number_word, Array* separators)
 {
-	size_t number = 0; //Номер текущего слова 
-	char* ptr = (char*)str->data; //Изменяющаяся переменная, хранящяя копию передаваемой строки
-	while (number != number_word)  //Цикл, который передвигает ptr до начала текущего слова 
+	size_t number = 0; //РќРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ СЃР»РѕРІР° 
+	char* ptr = (char*)str->data; //РР·РјРµРЅСЏСЋС‰Р°СЏСЃСЏ РїРµСЂРµРјРµРЅРЅР°СЏ, С…СЂР°РЅСЏС‰СЏСЏ РєРѕРїРёСЋ РїРµСЂРµРґР°РІР°РµРјРѕР№ СЃС‚СЂРѕРєРё
+	while (number != number_word)  //Р¦РёРєР», РєРѕС‚РѕСЂС‹Р№ РїРµСЂРµРґРІРёРіР°РµС‚ ptr РґРѕ РЅР°С‡Р°Р»Р° С‚РµРєСѓС‰РµРіРѕ СЃР»РѕРІР° 
 	{
-		while (CharInString(separators, *ptr)) //Цикл сдвигающий ptr до первого символа, который не является разделителем (Например, если ptr="  abcd  efg  " и разделитель это " ", то после выполнения цикла ptr="abcd  efg  ")
+		while (CharInString(separators, *ptr)) //Р¦РёРєР» СЃРґРІРёРіР°СЋС‰РёР№ ptr РґРѕ РїРµСЂРІРѕРіРѕ СЃРёРјРІРѕР»Р°, РєРѕС‚РѕСЂС‹Р№ РЅРµ СЏРІР»СЏРµС‚СЃСЏ СЂР°Р·РґРµР»РёС‚РµР»РµРј (РќР°РїСЂРёРјРµСЂ, РµСЃР»Рё ptr="  abcd  efg  " Рё СЂР°Р·РґРµР»РёС‚РµР»СЊ СЌС‚Рѕ " ", С‚Рѕ РїРѕСЃР»Рµ РІС‹РїРѕР»РЅРµРЅРёСЏ С†РёРєР»Р° ptr="abcd  efg  ")
 			ptr++;
-		while (!CharInString(separators, *ptr)) //Цикл сдвигающий ptr до первого символа, который является разделителем (Например, если ptr="abcd  efg  " и разделитель это " ", то после выполнения цикла ptr="  efg  ")
+		while (!CharInString(separators, *ptr)) //Р¦РёРєР» СЃРґРІРёРіР°СЋС‰РёР№ ptr РґРѕ РїРµСЂРІРѕРіРѕ СЃРёРјРІРѕР»Р°, РєРѕС‚РѕСЂС‹Р№ СЏРІР»СЏРµС‚СЃСЏ СЂР°Р·РґРµР»РёС‚РµР»РµРј (РќР°РїСЂРёРјРµСЂ, РµСЃР»Рё ptr="abcd  efg  " Рё СЂР°Р·РґРµР»РёС‚РµР»СЊ СЌС‚Рѕ " ", С‚Рѕ РїРѕСЃР»Рµ РІС‹РїРѕР»РЅРµРЅРёСЏ С†РёРєР»Р° ptr="  efg  ")
 			ptr++;
-		while (CharInString(separators, *ptr)) //То же, что и первый цикл
+		while (CharInString(separators, *ptr)) //РўРѕ Р¶Рµ, С‡С‚Рѕ Рё РїРµСЂРІС‹Р№ С†РёРєР»
 			ptr++;
-		//Все три цикла сдвигают ptr до начала следующего слова (Например, если ptr="  abcd  efg  " и разделитель это " ", то после выполнения трёх циклов ptr="efg  ")
-		number++; //Увеличиваем номер текущего слова на единицу
+		//Р’СЃРµ С‚СЂРё С†РёРєР»Р° СЃРґРІРёРіР°СЋС‚ ptr РґРѕ РЅР°С‡Р°Р»Р° СЃР»РµРґСѓСЋС‰РµРіРѕ СЃР»РѕРІР° (РќР°РїСЂРёРјРµСЂ, РµСЃР»Рё ptr="  abcd  efg  " Рё СЂР°Р·РґРµР»РёС‚РµР»СЊ СЌС‚Рѕ " ", С‚Рѕ РїРѕСЃР»Рµ РІС‹РїРѕР»РЅРµРЅРёСЏ С‚СЂС‘С… С†РёРєР»РѕРІ ptr="efg  ")
+		number++; //РЈРІРµР»РёС‡РёРІР°РµРј РЅРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ СЃР»РѕРІР° РЅР° РµРґРёРЅРёС†Сѓ
 	}
-	char* buff = ptr; //Сохраняе строку, начинающююся с искомого слова в buff
-	size_t size_word = 0; //Размер слова
-	while (!CharInString(separators, *ptr++)) //Цикл, в котором находим размер нашего слова 
+	char* buff = ptr; //РЎРѕС…СЂР°РЅСЏРµ СЃС‚СЂРѕРєСѓ, РЅР°С‡РёРЅР°СЋС‰СЋСЋСЃСЏ СЃ РёСЃРєРѕРјРѕРіРѕ СЃР»РѕРІР° РІ buff
+	size_t size_word = 0; //Р Р°Р·РјРµСЂ СЃР»РѕРІР°
+	while (!CharInString(separators, *ptr++)) //Р¦РёРєР», РІ РєРѕС‚РѕСЂРѕРј РЅР°С…РѕРґРёРј СЂР°Р·РјРµСЂ РЅР°С€РµРіРѕ СЃР»РѕРІР° 
 		size_word++;
-	ptr = buff; //Возвращаем в ptr сохранённую строку
-	char* word = (char*)malloc(sizeof(char) * size_word + sizeof('\0')); //Выделяем память под искомое слово
-	if (!word) //Сообщаем об ошибке, если word=NULL
+	ptr = buff; //Р’РѕР·РІСЂР°С‰Р°РµРј РІ ptr СЃРѕС…СЂР°РЅС‘РЅРЅСѓСЋ СЃС‚СЂРѕРєСѓ
+	char* word = (char*)malloc(sizeof(char) * size_word + sizeof('\0')); //Р’С‹РґРµР»СЏРµРј РїР°РјСЏС‚СЊ РїРѕРґ РёСЃРєРѕРјРѕРµ СЃР»РѕРІРѕ
+	if (!word) //РЎРѕРѕР±С‰Р°РµРј РѕР± РѕС€РёР±РєРµ, РµСЃР»Рё word=NULL
 		system("cls"), Error("Out of memmory");
-	buff = word; //В buff записываем адрес, где будет хранится слово
-	while (!CharInString(separators, *ptr)) //Цикл, в котором записываем слово
+	buff = word; //Р’ buff Р·Р°РїРёСЃС‹РІР°РµРј Р°РґСЂРµСЃ, РіРґРµ Р±СѓРґРµС‚ С…СЂР°РЅРёС‚СЃСЏ СЃР»РѕРІРѕ
+	while (!CharInString(separators, *ptr)) //Р¦РёРєР», РІ РєРѕС‚РѕСЂРѕРј Р·Р°РїРёСЃС‹РІР°РµРј СЃР»РѕРІРѕ
 		*buff++ = *ptr++;
-	*buff = '\0'; //В конце слова ставим '\0'
-	Array* word_str = CreateString(word); //Возвращаем искомое слово, как строку
+	*buff = '\0'; //Р’ РєРѕРЅС†Рµ СЃР»РѕРІР° СЃС‚Р°РІРёРј '\0'
+	Array* word_str = CreateString(word); //Р’РѕР·РІСЂР°С‰Р°РµРј РёСЃРєРѕРјРѕРµ СЃР»РѕРІРѕ, РєР°Рє СЃС‚СЂРѕРєСѓ
 	Delete(word);
 	return word_str;
 }
-//Возвращает true, если строки str1 и str2 равны, без учета регистра, в противном случае возвращает false
+//Р’РѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё СЃС‚СЂРѕРєРё str1 Рё str2 СЂР°РІРЅС‹, Р±РµР· СѓС‡РµС‚Р° СЂРµРіРёСЃС‚СЂР°, РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ РІРѕР·РІСЂР°С‰Р°РµС‚ false
 bool EqualStrings(Array* str1, Array* str2)
 {
 	if (Size(str1) != Size(str2))
@@ -343,7 +343,7 @@ bool EqualStrings(Array* str1, Array* str2)
 			return false;
 	return true;
 }
-//Возвращает true, если слово word типа Array* находится в списке list и записывет номер позиции в position_in_list, в противном случае возвращает false и position_in_list не меняется
+//Р’РѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё СЃР»РѕРІРѕ word С‚РёРїР° Array* РЅР°С…РѕРґРёС‚СЃСЏ РІ СЃРїРёСЃРєРµ list Рё Р·Р°РїРёСЃС‹РІРµС‚ РЅРѕРјРµСЂ РїРѕР·РёС†РёРё РІ position_in_list, РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ РІРѕР·РІСЂР°С‰Р°РµС‚ false Рё position_in_list РЅРµ РјРµРЅСЏРµС‚СЃСЏ
 bool WordInList(Array* list, Array* word, size_t* position_in_list)
 {
 	for (size_t i = 0; i < Size(list); i++)
@@ -354,7 +354,7 @@ bool WordInList(Array* list, Array* word, size_t* position_in_list)
 		}
 	return false;
 }
-//Возвращает true, если слово word типа Array* находится в строке str с разделителями, находящимися в строке separators, в противном случае возвращает false
+//Р’РѕР·РІСЂР°С‰Р°РµС‚ true, РµСЃР»Рё СЃР»РѕРІРѕ word С‚РёРїР° Array* РЅР°С…РѕРґРёС‚СЃСЏ РІ СЃС‚СЂРѕРєРµ str СЃ СЂР°Р·РґРµР»РёС‚РµР»СЏРјРё, РЅР°С…РѕРґСЏС‰РёРјРёСЃСЏ РІ СЃС‚СЂРѕРєРµ separators, РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ РІРѕР·РІСЂР°С‰Р°РµС‚ false
 bool WordInString(Array* str, Array* word, Array* separators)
 {
 	for (size_t i = 0; i < NumberWords(str, separators); i++)
@@ -371,7 +371,7 @@ bool WordInString(Array* str, Array* word, Array* separators)
 	}
 	return false;
 }
-//Возвращает количество различных слов в строке str с разделителями, находящимися в строке separators
+//Р’РѕР·РІСЂР°С‰Р°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ СЂР°Р·Р»РёС‡РЅС‹С… СЃР»РѕРІ РІ СЃС‚СЂРѕРєРµ str СЃ СЂР°Р·РґРµР»РёС‚РµР»СЏРјРё, РЅР°С…РѕРґСЏС‰РёРјРёСЃСЏ РІ СЃС‚СЂРѕРєРµ separators
 size_t NumberDifferentWords(Array* str, Array* separators)
 {
 	size_t count_repeat = 0;
@@ -395,7 +395,7 @@ size_t NumberDifferentWords(Array* str, Array* separators)
 	}
 	return number_words - count_repeat;
 }
-//Создаёт и возвращает список созданный из строки str с разделителями, находящимися в строке separators, за исключением слов находящихся в строке ban_dictionary
+//РЎРѕР·РґР°С‘С‚ Рё РІРѕР·РІСЂР°С‰Р°РµС‚ СЃРїРёСЃРѕРє СЃРѕР·РґР°РЅРЅС‹Р№ РёР· СЃС‚СЂРѕРєРё str СЃ СЂР°Р·РґРµР»РёС‚РµР»СЏРјРё, РЅР°С…РѕРґСЏС‰РёРјРёСЃСЏ РІ СЃС‚СЂРѕРєРµ separators, Р·Р° РёСЃРєР»СЋС‡РµРЅРёРµРј СЃР»РѕРІ РЅР°С…РѕРґСЏС‰РёС…СЃСЏ РІ СЃС‚СЂРѕРєРµ ban_dictionary
 Array* FillWordList(Array* str, Array* separators, Array* ban_dictionary)
 {
 	Array* list = CreateWordList(0);
